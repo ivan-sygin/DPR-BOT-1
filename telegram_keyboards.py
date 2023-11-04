@@ -101,6 +101,17 @@ def GenerateButtonConnection(i):
     )
 
 
+def GenerateButtonClose():
+    buttons = [
+        [
+            types.InlineKeyboardButton(
+                text=f"Закрыть",
+                callback_data=buttons_handler.encode("closeCallback", {}),
+            ),
+        ]
+    ]
+    return types.InlineKeyboardMarkup(inline_keyboard=buttons)
+
 def GenerateButtonsBackupMenu(id_server):
     buttons = [
         [

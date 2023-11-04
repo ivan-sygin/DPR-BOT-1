@@ -125,6 +125,12 @@ async def process_button1(callback_query: types.CallbackQuery):
         reply_markup=telegram_keyboards.GenerateButtonsBackupMenu(args['id']))
 
 
+@dp.callback_query(F.data[:13] == "closeCallback")
+async def process_button1(callback_query: types.CallbackQuery):
+    await bot.answer_callback_query(callback_query.id)
+    await callback_query.message.delete()
+
+
 @dp.callback_query(F.data[:11] == "viewBackups")
 async def process_button1(callback_query: types.CallbackQuery):
     await bot.answer_callback_query(callback_query.id)
@@ -137,7 +143,7 @@ async def process_button1(callback_query: types.CallbackQuery):
             text += f'ID: {item["id"]}\nНазвание: {item["filename"]}\n\n'
     else:
         text += f'🧹Бекапов не обнаружено🧹'
-    await bot.send_message(callback_query.message.chat.id, text)
+    await bot.send_message(callback_query.message.chat.id,text, reply_markup=telegram_keyboards.GenerateButtonClose())
 
 
 @dp.callback_query(F.data[:17] == "restoreFromBackup")
@@ -151,7 +157,7 @@ async def process_button1(callback_query: types.CallbackQuery):
     ]
 
     if res['response'] == "Нет доступных бекапов":
-        await bot.send_message(callback_query.message.chat.id, '🧹Бекапов не обнаружено🧹')
+        await bot.send_message(callback_query.message.chat.id, '🧹Бекапов не обнаружено🧹', reply_markup=telegram_keyboards.GenerateButtonClose())
         return
 
     for item in res['response']:
@@ -214,7 +220,7 @@ async def process_button1(callback_query: types.CallbackQuery):
     res = bc.fetchPostNoResponse('/api/Server/usebackup', auth=True,
                  data={'serverId': args['id'], 'backupId': args['num_backup'], 'backuptype': args['type']})
     await callback_query.message.edit_reply_markup(reply_markup=telegram_keyboards.GenerateInlineServer(args['id']))
-    await bot.send_message(callback_query.message.chat.id,'Бекап успешно восстановлен')
+    await bot.send_message(callback_query.message.chat.id,'Бекап успешно восстановлен', reply_markup=telegram_keyboards.GenerateButtonClose())
 
 
 @dp.callback_query(F.data[:12] == "createBackup")
@@ -225,7 +231,7 @@ async def process_button1(callback_query: types.CallbackQuery):
     namefile = str(datetime.datetime.now())[:-7].replace(' ','-')
     res = bc.fetchPostNoResponse('/api/Server/createbackup', auth = True, data = {'serverId':args['id'],'filename':namefile})
     await callback_query.message.edit_reply_markup(reply_markup=telegram_keyboards.GenerateInlineServer(args['id']))
-    await bot.send_message(callback_query.message.chat.id, f'Бекап {namefile} создан')
+    await bot.send_message(callback_query.message.chat.id, f'Бекап {namefile} создан', reply_markup=telegram_keyboards.GenerateButtonClose())
 
 
 @dp.callback_query(F.data[:10] == "serverInfo")
@@ -253,7 +259,7 @@ async def process_button1(callback_query: types.CallbackQuery):
         await mes.delete()
     except:
         await bot.send_message(
-            callback_query.message.chat.id, f"💀 СЕРВЕР {args['id']} НЕДОСТУПЕН 💀"
+            callback_query.message.chat.id, f"💀 СЕРВЕР {args['id']} НЕДОСТУПЕН 💀", reply_markup=telegram_keyboards.GenerateButtonClose()
         )
         await mes.delete()
 
@@ -310,7 +316,7 @@ async def process_button1(callback_query: types.CallbackQuery):
     await callback_query.message.edit_reply_markup(
         reply_markup=GenerateInlineServer(number_server)
     )
-    await bot.send_message(callback_query.message.chat.id, "Удалили лишние соединения")
+    await bot.send_message(callback_query.message.chat.id, "Удалили лишние соединения", reply_markup=telegram_keyboards.GenerateButtonClose())
 
 
 @dp.callback_query(F.data[:9] == "setmemogr")
@@ -368,7 +374,7 @@ async def send_graphic(callback_query: types.CallbackQuery):
 
     r = requests.post(f"http://26.65.125.199:8000/generateTimeChart", json=data_json)
     photo = types.BufferedInputFile(r.content, "image.png")
-    await bot.send_photo(chat_id=callback_query.message.chat.id, photo=photo)
+    await bot.send_photo(chat_id=callback_query.message.chat.id, photo=photo, reply_markup=telegram_keyboards.GenerateButtonClose())
 
 
 @dp.callback_query(F.data[:11] == "sendgraphic")
@@ -387,7 +393,7 @@ async def send_graphic(callback_query: types.CallbackQuery):
 
     r = requests.get(f"http://26.65.125.199:8000/generate_chart/{total}/{used}")
     photo = types.BufferedInputFile(r.content, "image.png")
-    await bot.send_photo(chat_id=callback_query.message.chat.id, photo=photo)
+    await bot.send_photo(chat_id=callback_query.message.chat.id, photo=photo, reply_markup=telegram_keyboards.GenerateButtonClose())
 
 
 @dp.callback_query(F.data[:10] == "setogrproc")
@@ -400,7 +406,7 @@ async def process_button1(callback_query: types.CallbackQuery):
     )
     await bot.send_message(
         str(callback_query.message.chat.id),
-        f"Установили ограничения по процессору на {args[1]}% для сервера {args[0]}",
+        f"Установили ограничения по процессору на {args[1]}% для сервера {args[0]}", reply_markup=telegram_keyboards.GenerateButtonClose()
     )
 
 
@@ -411,14 +417,14 @@ async def process_button1(callback_query: types.CallbackQuery):
 
     if callback_query.message.chat.id not in auth_info.keys():
         auth_info[callback_query.message.chat.id] = False
-        await bot.send_message(callback_query.message.chat.id, f'Пройдите авторизацию /auth <ключ>')
+        await bot.send_message(callback_query.message.chat.id, f'Пройдите авторизацию /auth <ключ>', reply_markup=telegram_keyboards.GenerateButtonClose())
         return
     if auth_info[callback_query.message.chat.id]:
         args = callback_query.data.split('|')[1:]
-        await bot.send_message(callback_query.message.chat.id, f'Выполнено')
+        await bot.send_message(callback_query.message.chat.id, f'Выполнено', reply_markup=telegram_keyboards.GenerateButtonClose())
         auth_info[callback_query.message.chat.id] = False
     else:
-        await bot.send_message(callback_query.message.chat.id, f'Пройдите авторизацию /auth <ключ>')
+        await bot.send_message(callback_query.message.chat.id, f'Пройдите авторизацию /auth <ключ>', reply_markup=telegram_keyboards.GenerateButtonClose())
 
 
 @dp.callback_query(F.data[:9] == "memoryFix")
@@ -428,14 +434,14 @@ async def process_button1(callback_query: types.CallbackQuery):
 
     if callback_query.message.chat.id not in auth_info.keys():
         auth_info[callback_query.message.chat.id] = False
-        await bot.send_message(callback_query.message.chat.id, f'Пройдите авторизацию /auth <ключ>')
+        await bot.send_message(callback_query.message.chat.id, f'Пройдите авторизацию /auth <ключ>', reply_markup=telegram_keyboards.GenerateButtonClose())
         return
     if auth_info[callback_query.message.chat.id]:
         args = callback_query.data.split('|')[1:]
-        await bot.send_message(callback_query.message.chat.id, f'Выполнено')
+        await bot.send_message(callback_query.message.chat.id, f'Выполнено', reply_markup=telegram_keyboards.GenerateButtonClose())
         auth_info[callback_query.message.chat.id] = False
     else:
-        await bot.send_message(callback_query.message.chat.id, f'Пройдите авторизацию /auth <ключ>')
+        await bot.send_message(callback_query.message.chat.id, f'Пройдите авторизацию /auth <ключ>', reply_markup=telegram_keyboards.GenerateButtonClose())
 
 @dp.message(Command("auth"))
 async def check_start(message: types.Message):
@@ -445,7 +451,7 @@ async def check_start(message: types.Message):
         await message.delete()
     else:
         await message.delete()
-        await bot.send_message(message.chat.id,"Ошибка авторизации!")
+        await bot.send_message(message.chat.id,"Ошибка авторизации!", reply_markup=telegram_keyboards.GenerateButtonClose())
 
 
 
@@ -456,14 +462,14 @@ async def process_button1(callback_query: types.CallbackQuery):
 
     if callback_query.message.chat.id not in auth_info.keys():
         auth_info[callback_query.message.chat.id] = False
-        await bot.send_message(callback_query.message.chat.id, f'Пройдите авторизацию /auth <ключ>')
+        await bot.send_message(callback_query.message.chat.id, f'Пройдите авторизацию /auth <ключ>', reply_markup=telegram_keyboards.GenerateButtonClose())
         return
     if auth_info[callback_query.message.chat.id]:
         args = callback_query.data.split('|')[1:]
-        await bot.send_message(callback_query.message.chat.id, f'Выполнено')
+        await bot.send_message(callback_query.message.chat.id, f'Выполнено', reply_markup=telegram_keyboards.GenerateButtonClose())
         auth_info[callback_query.message.chat.id] = False
     else:
-        await bot.send_message(callback_query.message.chat.id, f'Пройдите авторизацию /auth <ключ>')
+        await bot.send_message(callback_query.message.chat.id, f'Пройдите авторизацию /auth <ключ>', reply_markup=telegram_keyboards.GenerateButtonClose())
 
 
 @dp.callback_query(F.data[:9] == "setogrmem")
@@ -476,7 +482,7 @@ async def process_button1(callback_query: types.CallbackQuery):
     )
     await bot.send_message(
         str(callback_query.message.chat.id),
-        f"Установили ограничения по памяти на {args[1]}% для сервера {args[0]}",
+        f"Установили ограничения по памяти на {args[1]}% для сервера {args[0]}", reply_markup=telegram_keyboards.GenerateButtonClose()
     )
 
 

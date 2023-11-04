@@ -29,7 +29,7 @@ class BackendConnector:
                 for k, val in data.items():
                     temp_url += k + "=" + str(val) + "&"
             temp_url = temp_url[:-1]
-        r = requests.get(temp_url, verify=False,timeout=3)
+        r = requests.get(temp_url, verify=False,timeout=1)
         return r.json()
 
     def fetchPost(self, address_api, data: dict = None, auth: bool = False, **kwargs):
@@ -42,7 +42,7 @@ class BackendConnector:
                 for k, val in data.items():
                     temp_url += k + "=" + str(val) + "&"
             temp_url = temp_url[:-1]
-        r = requests.post(temp_url, verify=False,timeout=3,**kwargs)
+        r = requests.post(temp_url, verify=False,timeout=1,**kwargs)
         return r.json()
     def fetchPostNoResponse(self, address_api, data: dict = None, auth: bool = False, **kwargs):
         temp_url = f'{self.url}{address_api}'
@@ -54,7 +54,7 @@ class BackendConnector:
                 for k, val in data.items():
                     temp_url += k + "=" + str(val) + "&"
             temp_url = temp_url[:-1]
-        r = requests.post(temp_url, verify=False,timeout=3,**kwargs)
+        r = requests.post(temp_url, verify=False,timeout=1,**kwargs)
         return r
     def fetchGetNoData(self, address_api, data: dict = None, auth: bool = False):
         temp_url = f'{self.url}{address_api}'
