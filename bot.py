@@ -295,9 +295,9 @@ async def check_start(message: types.Message):
 async def main():
     await gs.sendToNotified('Сервис работает! Status: 200', keyboard=keyboard_main)
 
-    #tasks = [longpooling(), dp.start_polling(bot)]
+    tasks = [longpooling(), dp.start_polling(bot)]
 
-    tasks = [dp.start_polling(bot)]
+    #tasks = [dp.start_polling(bot)]
 
     await asyncio.gather(*tasks)
 
