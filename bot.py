@@ -35,7 +35,7 @@ db = DB_Handler(
 
 users = db.getUsers()
 
-
+auth_info = {}
 def updateUsersList():
     global users
     users = db.getUsers()
@@ -411,11 +411,31 @@ async def process_button1(callback_query: types.CallbackQuery):
     await bot.send_message('719194958', f'Костя почини процессор серверу {args[0]} ')
 
 
-@dp.callback_query(F.data[:12] == "memoryFix")
+@dp.callback_query(F.data[:9] == "memoryFix")
 async def process_button1(callback_query: types.CallbackQuery):
+    global auth_info
     await bot.answer_callback_query(callback_query.id)
-    args = callback_query.data.split('|')[1:]
-    await bot.send_message('719194958', f'Костя почини память серверу {args[0]} ')
+
+    if callback_query.message.chat.id not in auth_info.keys():
+        auth_info[callback_query.message.chat.id] = False
+        await bot.send_message(callback_query.message.chat.id, f'Пройдите авторизацию /auth <ключ>')
+        return
+    if auth_info[callback_query.message.chat.id]:
+        args = callback_query.data.split('|')[1:]
+        await bot.send_message(callback_query.message.chat.id, f'Выполнено')
+        auth_info[callback_query.message.chat.id] = False
+    else:
+        await bot.send_message(callback_query.message.chat.id, f'Пройдите авторизацию /auth <ключ>')
+@dp.message(Command("auth"))
+async def check_start(message: types.Message):
+    args = message.text.split()[1:]
+    if os.environ["USER_TOKEN"] == args[0]:
+        auth_info[message.chat.id] = True
+        await message.delete()
+    else:
+        await message.delete()
+        await bot.send_message(message.chat.id,"Ошибка авторизации!")
+
 
 
 @dp.callback_query(F.data[:12] == "connectionFix")
