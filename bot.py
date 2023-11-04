@@ -406,9 +406,19 @@ async def process_button1(callback_query: types.CallbackQuery):
 
 @dp.callback_query(F.data[:12] == "processorFix")
 async def process_button1(callback_query: types.CallbackQuery):
+    global auth_info
     await bot.answer_callback_query(callback_query.id)
-    args = callback_query.data.split('|')[1:]
-    await bot.send_message('719194958', f'Костя почини процессор серверу {args[0]} ')
+
+    if callback_query.message.chat.id not in auth_info.keys():
+        auth_info[callback_query.message.chat.id] = False
+        await bot.send_message(callback_query.message.chat.id, f'Пройдите авторизацию /auth <ключ>')
+        return
+    if auth_info[callback_query.message.chat.id]:
+        args = callback_query.data.split('|')[1:]
+        await bot.send_message(callback_query.message.chat.id, f'Выполнено')
+        auth_info[callback_query.message.chat.id] = False
+    else:
+        await bot.send_message(callback_query.message.chat.id, f'Пройдите авторизацию /auth <ключ>')
 
 
 @dp.callback_query(F.data[:9] == "memoryFix")
@@ -426,6 +436,7 @@ async def process_button1(callback_query: types.CallbackQuery):
         auth_info[callback_query.message.chat.id] = False
     else:
         await bot.send_message(callback_query.message.chat.id, f'Пройдите авторизацию /auth <ключ>')
+
 @dp.message(Command("auth"))
 async def check_start(message: types.Message):
     args = message.text.split()[1:]
@@ -438,11 +449,21 @@ async def check_start(message: types.Message):
 
 
 
-@dp.callback_query(F.data[:12] == "connectionFix")
+@dp.callback_query(F.data[:13] == "connectionFix")
 async def process_button1(callback_query: types.CallbackQuery):
+    global auth_info
     await bot.answer_callback_query(callback_query.id)
-    args = callback_query.data.split('|')[1:]
-    await bot.send_message('719194958', f'Костя почини соединения серверу {args[0]} ')
+
+    if callback_query.message.chat.id not in auth_info.keys():
+        auth_info[callback_query.message.chat.id] = False
+        await bot.send_message(callback_query.message.chat.id, f'Пройдите авторизацию /auth <ключ>')
+        return
+    if auth_info[callback_query.message.chat.id]:
+        args = callback_query.data.split('|')[1:]
+        await bot.send_message(callback_query.message.chat.id, f'Выполнено')
+        auth_info[callback_query.message.chat.id] = False
+    else:
+        await bot.send_message(callback_query.message.chat.id, f'Пройдите авторизацию /auth <ключ>')
 
 
 @dp.callback_query(F.data[:9] == "setogrmem")
