@@ -462,7 +462,7 @@ async def check_start(message: types.Message):
             f"Вас нет в списке администраторов баз данных. Обратитесь к системному администратору."
         )
         await gs.sendToAdmin(
-            f"Попытка взять данные у бота:\nchat_id: {message.chat.id}\nИмя в Telegram: {message.chat.full_name}\nДанные про базу: {args}"
+            f"Попытка взять данные у бота:\nchat_id: {message.chat.id}\nИмя в Telegrame: {message.chat.full_name}\nДанные про базу: {args}"
         )
 
 
