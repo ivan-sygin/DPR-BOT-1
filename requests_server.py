@@ -12,7 +12,7 @@ class BackendConnector:
     ip_server = '26.0.102.28'
     port = '7278'
     url = 'https://26.0.102.28:7278'
-
+    timeout = 3
     def __init__(self, protocol, ip_server, port):
         self.protocol = protocol
         self.ip_server = ip_server
@@ -29,7 +29,7 @@ class BackendConnector:
                 for k, val in data.items():
                     temp_url += k + "=" + str(val) + "&"
             temp_url = temp_url[:-1]
-        r = requests.get(temp_url, verify=False,timeout=1)
+        r = requests.get(temp_url, verify=False,timeout=self.timeout)
         return r.json()
 
     def fetchPost(self, address_api, data: dict = None, auth: bool = False, **kwargs):
@@ -42,7 +42,7 @@ class BackendConnector:
                 for k, val in data.items():
                     temp_url += k + "=" + str(val) + "&"
             temp_url = temp_url[:-1]
-        r = requests.post(temp_url, verify=False,timeout=1,**kwargs)
+        r = requests.post(temp_url, verify=False,timeout=self.timeout,**kwargs)
         return r.json()
     def fetchPostNoResponse(self, address_api, data: dict = None, auth: bool = False, **kwargs):
         temp_url = f'{self.url}{address_api}'
@@ -54,7 +54,7 @@ class BackendConnector:
                 for k, val in data.items():
                     temp_url += k + "=" + str(val) + "&"
             temp_url = temp_url[:-1]
-        r = requests.post(temp_url, verify=False,timeout=1,**kwargs)
+        r = requests.post(temp_url, verify=False,timeout=self.timeout,**kwargs)
         return r
     def fetchGetNoData(self, address_api, data: dict = None, auth: bool = False):
         temp_url = f'{self.url}{address_api}'

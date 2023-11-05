@@ -422,6 +422,7 @@ async def process_button1(callback_query: types.CallbackQuery):
     if auth_info[callback_query.message.chat.id]:
         args = callback_query.data.split('|')[1:]
         await bot.send_message(callback_query.message.chat.id, f'Выполнено', reply_markup=telegram_keyboards.GenerateButtonClose())
+        await callback_query.message.delete()
         auth_info[callback_query.message.chat.id] = False
     else:
         await bot.send_message(callback_query.message.chat.id, f'Пройдите авторизацию /auth <ключ>', reply_markup=telegram_keyboards.GenerateButtonClose())
@@ -439,6 +440,7 @@ async def process_button1(callback_query: types.CallbackQuery):
     if auth_info[callback_query.message.chat.id]:
         args = callback_query.data.split('|')[1:]
         await bot.send_message(callback_query.message.chat.id, f'Выполнено', reply_markup=telegram_keyboards.GenerateButtonClose())
+        await callback_query.message.delete()
         auth_info[callback_query.message.chat.id] = False
     else:
         await bot.send_message(callback_query.message.chat.id, f'Пройдите авторизацию /auth <ключ>', reply_markup=telegram_keyboards.GenerateButtonClose())
@@ -467,6 +469,7 @@ async def process_button1(callback_query: types.CallbackQuery):
     if auth_info[callback_query.message.chat.id]:
         args = callback_query.data.split('|')[1:]
         await bot.send_message(callback_query.message.chat.id, f'Выполнено', reply_markup=telegram_keyboards.GenerateButtonClose())
+        await callback_query.message.delete()
         auth_info[callback_query.message.chat.id] = False
     else:
         await bot.send_message(callback_query.message.chat.id, f'Пройдите авторизацию /auth <ключ>', reply_markup=telegram_keyboards.GenerateButtonClose())
@@ -514,12 +517,12 @@ async def check_start(message: types.Message):
 
 
 async def main():
-    tasks = [longpooling(), dp.start_polling(bot)]
-   #tasks = [dp.start_polling(bot)]
+    #tasks = [longpooling(), dp.start_polling(bot)]
+    tasks = [dp.start_polling(bot)]
     global COUNT_SERVERS
     try:
         COUNT_SERVERS = len(bc.fetchGet("/api/Server/servers", auth=True)['response'])
-        await gs.sendToNotified('Сервис работает! Status: 200', keyboard=keyboard_main)
+        #await gs.sendToNotified('Сервис работает! Status: 200', keyboard=keyboard_main)
         await asyncio.gather(*tasks)
     except Exception as e:
         trace = traceback.extract_tb(sys.exc_info()[2])
@@ -544,7 +547,6 @@ async def longpooling():
         for i in range(COUNT_SERVERS):
             try:
                 result = bc.fetchGet('/api/Server/stats', auth=True, data={'id': i + 1})
-
                 if 'errorText' not in result.keys():
 
                     jsik = bc.fetchGet('/api/Server/findproblems', auth=True, data={'serverId': i + 1})
@@ -565,11 +567,11 @@ async def longpooling():
                             result_from_GPT = ''
                             try:
                                 r = requests.post(
-                                    f"http://26.65.125.1991:8000/sendMessage?temperature=0.87",
+                                    f"http://26.65.125.199:8000/sendMessage?temperature=0.87",
                                     json=[
                                         {
                                             "role": "user",
-                                            "content": "Опиши двумя словами. У меня возникла проблема с базой данных на PostgreSQL. Вот описание: "
+                                            "content": "Опиши коротко словами. У меня возникла проблема с базой данных на PostgreSQL. Как решить эту проблему: "
                                                        + text_all_errors
                                         }
                                     ],
